@@ -148,7 +148,7 @@ static int checkout_merged(int pos, struct checkout *state)
 	const char *path = ce->name;
 	mmfile_t ancestor, ours, theirs;
 	int status;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	mmbuffer_t result_buf;
 
 	if (ce_stage(ce) != 1 ||

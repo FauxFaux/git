@@ -110,7 +110,7 @@ void status_printf_more(struct wt_status *s, const char *color,
 
 void wt_status_prepare(struct wt_status *s)
 {
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	const char *head;
 
 	memset(s, 0, sizeof(*s));

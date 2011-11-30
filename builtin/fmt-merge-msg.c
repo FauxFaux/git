@@ -61,7 +61,7 @@ static int handle_line(char *line)
 		return 2;
 
 	line[40] = 0;
-	sha1 = xmalloc(20);
+	sha1 = xmalloc(HASH_OCTETS);
 	i = get_sha1(line, sha1);
 	line[40] = '\t';
 	if (i)
@@ -259,7 +259,7 @@ static void do_fmt_merge_msg_title(struct strbuf *out,
 static int do_fmt_merge_msg(int merge_title, struct strbuf *in,
 	struct strbuf *out, int shortlog_len) {
 	int i = 0, pos = 0;
-	unsigned char head_sha1[20];
+	unsigned char head_sha1[HASH_OCTETS];
 	const char *current_branch;
 
 	/* get current branch */

@@ -224,7 +224,7 @@ struct tree_entry {
 	struct atom_str *name;
 	struct tree_entry_ms {
 		uint16_t mode;
-		unsigned char sha1[20];
+		unsigned char sha1[HASH_OCTETS];
 	} versions[2];
 };
 
@@ -249,19 +249,19 @@ struct branch {
 	uintmax_t num_notes;
 	unsigned active : 1;
 	unsigned pack_id : PACK_ID_BITS;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 };
 
 struct tag {
 	struct tag *next_tag;
 	const char *name;
 	unsigned int pack_id;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 };
 
 struct hash_list {
 	struct hash_list *next;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 };
 
 typedef enum {
@@ -949,7 +949,7 @@ static void end_packfile(void)
 
 	clear_delta_base_cache();
 	if (object_count) {
-		unsigned char cur_pack_sha1[20];
+		unsigned char cur_pack_sha1[HASH_OCTETS];
 		char *idx_name;
 		int i;
 		struct branch *b;
@@ -1017,7 +1017,7 @@ static int store_object(
 	void *out, *delta;
 	struct object_entry *e;
 	unsigned char hdr[96];
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	unsigned long hdrlen, deltalen;
 	git_SHA_CTX c;
 	git_zstream s;
@@ -1162,7 +1162,7 @@ static void stream_blob(uintmax_t len, unsigned char *sha1out, uintmax_t mark)
 	unsigned char *in_buf = xmalloc(in_sz);
 	unsigned char *out_buf = xmalloc(out_sz);
 	struct object_entry *e;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	unsigned long hdrlen;
 	off_t offset;
 	git_SHA_CTX c;
@@ -1421,7 +1421,7 @@ static void mktree(struct tree_content *t, int v, struct strbuf *b)
 		strbuf_addf(b, "%o %s%c",
 			(unsigned int)(e->versions[v].mode & ~NO_DELTA),
 			e->name->str_dat, '\0');
-		strbuf_add(b, e->versions[v].sha1, 20);
+		strbuf_add(b, e->versions[v].sha1, HASH_OCTETS);
 	}
 }
 
@@ -1679,7 +1679,7 @@ static int update_branch(struct branch *b)
 {
 	static const char *msg = "fast-import";
 	struct ref_lock *lock;
-	unsigned char old_sha1[20];
+	unsigned char old_sha1[HASH_OCTETS];
 
 	if (is_null_sha1(b->sha1))
 		return 0;
@@ -1820,7 +1820,7 @@ static void read_marks(void)
 	while (fgets(line, sizeof(line), f)) {
 		uintmax_t mark;
 		char *end;
-		unsigned char sha1[20];
+		unsigned char sha1[HASH_OCTETS];
 		struct object_entry *e;
 
 		end = strchr(line, '\n');
@@ -2140,7 +2140,7 @@ static uintmax_t do_change_note_fanout(
 	struct tree_entry *e, leaf;
 	unsigned int i, tmp_hex_sha1_len, tmp_fullpath_len;
 	uintmax_t num_notes = 0;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	char realpath[60];
 
 	for (i = 0; t && i < t->entry_count; i++) {
@@ -2215,7 +2215,7 @@ static void file_change_m(struct branch *b)
 	static struct strbuf uq = STRBUF_INIT;
 	const char *endp;
 	struct object_entry *oe = oe;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	uint16_t mode, inline_data = 0;
 
 	p = get_mode(p, &mode);
@@ -2261,7 +2261,7 @@ static void file_change_m(struct branch *b)
 	}
 
 	/* Git does not track empty, non-toplevel directories. */
-	if (S_ISDIR(mode) && !memcmp(sha1, EMPTY_TREE_SHA1_BIN, 20) && *p) {
+	if (S_ISDIR(mode) && !memcmp(sha1, EMPTY_TREE_SHA1_BIN, HASH_OCTETS) && *p) {
 		tree_content_remove(&b->branch_tree, p, NULL);
 		return;
 	}
@@ -2385,7 +2385,7 @@ static void note_change_n(struct branch *b, unsigned char old_fanout)
 	static struct strbuf uq = STRBUF_INIT;
 	struct object_entry *oe = oe;
 	struct branch *s;
-	unsigned char sha1[20], commit_sha1[20];
+	unsigned char sha1[20], commit_sha1[HASH_OCTETS];
 	char path[60];
 	uint16_t inline_data = 0;
 	unsigned char new_fanout;
@@ -2693,7 +2693,7 @@ static void parse_new_tag(void)
 	struct branch *s;
 	struct tag *t;
 	uintmax_t from_mark = 0;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	enum object_type type;
 
 	/* Obtain the new tag name from the rest of our command */
@@ -2798,7 +2798,7 @@ static void cat_blob_write(const char *buf, unsigned long size)
 		die_errno("Write to frontend failed");
 }
 
-static void cat_blob(struct object_entry *oe, unsigned char sha1[20])
+static void cat_blob(struct object_entry *oe, unsigned char sha1[HASH_OCTETS])
 {
 	struct strbuf line = STRBUF_INIT;
 	unsigned long size;
@@ -2847,7 +2847,7 @@ static void parse_cat_blob(void)
 {
 	const char *p;
 	struct object_entry *oe = oe;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 
 	/* cat-blob SP <object> LF */
 	p = command_buf.buf + strlen("cat-blob ");
@@ -2873,7 +2873,7 @@ static void parse_cat_blob(void)
 }
 
 static struct object_entry *dereference(struct object_entry *oe,
-					unsigned char sha1[20])
+					unsigned char sha1[HASH_OCTETS])
 {
 	unsigned long size;
 	char *buf = NULL;
@@ -2925,7 +2925,7 @@ static struct object_entry *dereference(struct object_entry *oe,
 
 static struct object_entry *parse_treeish_dataref(const char **p)
 {
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	struct object_entry *e;
 
 	if (**p == ':') {	/* <mark> */

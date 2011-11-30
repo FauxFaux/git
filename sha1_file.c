@@ -30,7 +30,7 @@
 #define SZ_FMT PRIuMAX
 static inline uintmax_t sz_fmt(size_t s) { return s; }
 
-const unsigned char null_sha1[20];
+const unsigned char null_sha1[HASH_OCTETS];
 
 /*
  * This is meant to hold a *small* number of objects that you would
@@ -39,7 +39,7 @@ const unsigned char null_sha1[20];
  * application).
  */
 static struct cached_object {
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	enum object_type type;
 	void *buf;
 	unsigned long size;
@@ -734,7 +734,7 @@ static int open_packed_git_1(struct packed_git *p)
 {
 	struct stat st;
 	struct pack_header hdr;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	unsigned char *idx_sha1;
 	long fd_flag;
 
@@ -1122,10 +1122,10 @@ static void mark_bad_packed_object(struct packed_git *p,
 {
 	unsigned i;
 	for (i = 0; i < p->num_bad_objects; i++)
-		if (!hashcmp(sha1, p->bad_object_sha1 + 20 * i))
+		if (!hashcmp(sha1, p->bad_object_sha1 + HASH_OCTETS * i))
 			return;
-	p->bad_object_sha1 = xrealloc(p->bad_object_sha1, 20 * (p->num_bad_objects + 1));
-	hashcpy(p->bad_object_sha1 + 20 * p->num_bad_objects, sha1);
+	p->bad_object_sha1 = xrealloc(p->bad_object_sha1, HASH_OCTETS * (p->num_bad_objects + 1));
+	hashcpy(p->bad_object_sha1 + HASH_OCTETS * p->num_bad_objects, sha1);
 	p->num_bad_objects++;
 }
 
@@ -1136,14 +1136,14 @@ static const struct packed_git *has_packed_and_bad(const unsigned char *sha1)
 
 	for (p = packed_git; p; p = p->next)
 		for (i = 0; i < p->num_bad_objects; i++)
-			if (!hashcmp(sha1, p->bad_object_sha1 + 20 * i))
+			if (!hashcmp(sha1, p->bad_object_sha1 + HASH_OCTETS * i))
 				return p;
 	return NULL;
 }
 
 int check_sha1_signature(const unsigned char *sha1, void *map, unsigned long size, const char *type)
 {
-	unsigned char real_sha1[20];
+	unsigned char real_sha1[HASH_OCTETS];
 	hash_sha1_file(map, size, type, real_sha1);
 	return hashcmp(sha1, real_sha1) ? -1 : 0;
 }
@@ -2023,7 +2023,7 @@ static int find_pack_entry(const unsigned char *sha1, struct pack_entry *e)
 		if (p->num_bad_objects) {
 			unsigned i;
 			for (i = 0; i < p->num_bad_objects; i++)
-				if (!hashcmp(sha1, p->bad_object_sha1 + 20 * i))
+				if (!hashcmp(sha1, p->bad_object_sha1 + HASH_OCTETS * i))
 					goto next;
 		}
 
@@ -2273,7 +2273,7 @@ void *read_object_with_reference(const unsigned char *sha1,
 	enum object_type type, required_type;
 	void *buffer;
 	unsigned long isize;
-	unsigned char actual_sha1[20];
+	unsigned char actual_sha1[HASH_OCTETS];
 
 	required_type = type_from_string(required_type_name);
 	hashcpy(actual_sha1, sha1);
@@ -2448,7 +2448,7 @@ static int write_loose_object(const unsigned char *sha1, char *hdr, int hdrlen,
 	unsigned char compressed[4096];
 	git_zstream stream;
 	git_SHA_CTX c;
-	unsigned char parano_sha1[20];
+	unsigned char parano_sha1[HASH_OCTETS];
 	char *filename;
 	static char tmpfile[PATH_MAX];
 
@@ -2513,7 +2513,7 @@ static int write_loose_object(const unsigned char *sha1, char *hdr, int hdrlen,
 
 int write_sha1_file(const void *buf, unsigned long len, const char *type, unsigned char *returnsha1)
 {
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	char hdr[32];
 	int hdrlen;
 

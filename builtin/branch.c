@@ -28,7 +28,7 @@ static const char * const builtin_branch_usage[] = {
 #define REF_REMOTE_BRANCH   0x02
 
 static const char *head;
-static unsigned char head_sha1[20];
+static unsigned char head_sha1[HASH_OCTETS];
 
 static int branch_use_color = -1;
 static char branch_colors[][COLOR_MAXLEN] = {
@@ -108,7 +108,7 @@ static int branch_merged(int kind, const char *name,
 
 	if (kind == REF_LOCAL_BRANCH) {
 		struct branch *branch = branch_get(name);
-		unsigned char sha1[20];
+		unsigned char sha1[HASH_OCTETS];
 
 		if (branch &&
 		    branch->merge &&
@@ -147,7 +147,7 @@ static int branch_merged(int kind, const char *name,
 static int delete_branches(int argc, const char **argv, int force, int kinds)
 {
 	struct commit *rev, *head_rev = NULL;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	char *name = NULL;
 	const char *fmt, *remote;
 	int i;
@@ -246,7 +246,7 @@ struct ref_list {
 
 static char *resolve_symref(const char *src, const char *prefix)
 {
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	int flag;
 	const char *dst, *cp;
 
@@ -565,7 +565,7 @@ static int print_ref_list(int kinds, int detached, int verbose, int abbrev, stru
 static void rename_branch(const char *oldname, const char *newname, int force)
 {
 	struct strbuf oldref = STRBUF_INIT, newref = STRBUF_INIT, logmsg = STRBUF_INIT;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	struct strbuf oldsection = STRBUF_INIT, newsection = STRBUF_INIT;
 	int recovery = 0;
 

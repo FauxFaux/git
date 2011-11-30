@@ -343,7 +343,7 @@ static int get_ref_states(const struct ref *remote_refs, struct ref_states *stat
 	states->tracked.strdup_strings = 1;
 	states->stale.strdup_strings = 1;
 	for (ref = fetch_map; ref; ref = ref->next) {
-		unsigned char sha1[20];
+		unsigned char sha1[HASH_OCTETS];
 		if (!ref->peer_ref || read_ref(ref->peer_ref->name, sha1))
 			string_list_append(&states->new, abbrev_branch(ref->name));
 		else
@@ -568,7 +568,7 @@ static int read_remote_branches(const char *refname,
 	struct strbuf buf = STRBUF_INIT;
 	struct string_list_item *item;
 	int flag;
-	unsigned char orig_sha1[20];
+	unsigned char orig_sha1[HASH_OCTETS];
 	const char *symref;
 
 	strbuf_addf(&buf, "refs/remotes/%s/", rename->old);
@@ -708,7 +708,7 @@ static int mv(int argc, const char **argv)
 	for (i = 0; i < remote_branches.nr; i++) {
 		struct string_list_item *item = remote_branches.items + i;
 		int flag = 0;
-		unsigned char sha1[20];
+		unsigned char sha1[HASH_OCTETS];
 
 		resolve_ref(item->string, sha1, 1, &flag);
 		if (!(flag & REF_ISSYMREF))
@@ -1220,7 +1220,7 @@ static int set_head(int argc, const char **argv)
 		usage_with_options(builtin_remote_sethead_usage, options);
 
 	if (head_name) {
-		unsigned char sha1[20];
+		unsigned char sha1[HASH_OCTETS];
 		strbuf_addf(&buf2, "refs/remotes/%s/%s", argv[0], head_name);
 		/* make sure it's valid */
 		if (!resolve_ref(buf2.buf, sha1, 1, NULL))

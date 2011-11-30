@@ -29,8 +29,8 @@ int cmd_commit_tree(int argc, const char **argv, const char *prefix)
 {
 	int i;
 	struct commit_list *parents = NULL;
-	unsigned char tree_sha1[20];
-	unsigned char commit_sha1[20];
+	unsigned char tree_sha1[HASH_OCTETS];
+	unsigned char commit_sha1[HASH_OCTETS];
 	struct strbuf buffer = STRBUF_INIT;
 
 	git_config(git_default_config, NULL);
@@ -41,7 +41,7 @@ int cmd_commit_tree(int argc, const char **argv, const char *prefix)
 		die("Not a valid object name %s", argv[1]);
 
 	for (i = 2; i < argc; i += 2) {
-		unsigned char sha1[20];
+		unsigned char sha1[HASH_OCTETS];
 		const char *a, *b;
 		a = argv[i]; b = argv[i+1];
 		if (!b || strcmp(a, "-p"))

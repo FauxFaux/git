@@ -254,7 +254,7 @@ static void parse_treeish_arg(const char **argv,
 	time_t archive_time;
 	struct tree *tree;
 	const struct commit *commit;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 
 	if (get_sha1(name, sha1))
 		die("Not a valid object name");
@@ -273,7 +273,7 @@ static void parse_treeish_arg(const char **argv,
 		die("not a tree object");
 
 	if (prefix) {
-		unsigned char tree_sha1[20];
+		unsigned char tree_sha1[HASH_OCTETS];
 		unsigned int mode;
 		int err;
 

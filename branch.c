@@ -149,7 +149,7 @@ int validate_new_branchname(const char *name, struct strbuf *ref,
 
 	if (!attr_only) {
 		const char *head;
-		unsigned char sha1[20];
+		unsigned char sha1[HASH_OCTETS];
 
 		head = resolve_ref("HEAD", sha1, 0, NULL);
 		if (!is_bare_repository() && head && !strcmp(head, ref->buf))
@@ -164,7 +164,7 @@ void create_branch(const char *head,
 {
 	struct ref_lock *lock = NULL;
 	struct commit *commit;
-	unsigned char sha1[20];
+	unsigned char sha1[HASH_OCTETS];
 	char *real_ref, msg[PATH_MAX + 20];
 	struct strbuf ref = STRBUF_INIT;
 	int forcing = 0;

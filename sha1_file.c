@@ -148,7 +148,6 @@ static void fill_sha1_path(char *pathbuf, const unsigned char *sha1)
 		char *pos = pathbuf + i*2 + (i > 0);
 		*pos++ = hex[val >> 4];
 		*pos = hex[val & 0xf];
-		printf("%i\n", HASH_OCTETS);
 	}
 }
 

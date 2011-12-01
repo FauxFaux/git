@@ -10,7 +10,7 @@
 struct ref_entry {
 	unsigned char flag; /* ISSYMREF? ISPACKED? */
 	unsigned char sha1[HASH_OCTETS];
-	unsigned char peeled[20];
+	unsigned char peeled[HASH_OCTETS];
 	char name[FLEX_ARRAY];
 };
 
@@ -356,7 +356,7 @@ static int warn_if_dangling_symref(const char *refname, const unsigned char *sha
 {
 	struct warn_if_dangling_data *d = cb_data;
 	const char *resolves_to;
-	unsigned char junk[20];
+	unsigned char junk[HASH_OCTETS];
 
 	if (!(flags & REF_ISSYMREF))
 		return 0;
@@ -650,7 +650,7 @@ static int filter_refs(const char *ref, const unsigned char *sha, int flags,
 int peel_ref(const char *ref, unsigned char *sha1)
 {
 	int flag;
-	unsigned char base[20];
+	unsigned char base[HASH_OCTETS];
 	struct object *o;
 
 	if (current_ref && (current_ref->name == ref
@@ -1138,7 +1138,7 @@ int dwim_log(const char *str, int len, unsigned char *sha1, char **log)
 	*log = NULL;
 	for (p = ref_rev_parse_rules; *p; p++) {
 		struct stat st;
-		unsigned char hash[20];
+		unsigned char hash[HASH_OCTETS];
 		char path[PATH_MAX];
 		const char *ref, *it;
 
@@ -1345,7 +1345,7 @@ int delete_ref(const char *refname, const unsigned char *sha1, int delopt)
 
 int rename_ref(const char *oldref, const char *newref, const char *logmsg)
 {
-	unsigned char sha1[20], orig_sha1[HASH_OCTETS];
+	unsigned char sha1[HASH_OCTETS], orig_sha1[HASH_OCTETS];
 	int flag = 0, logmoved = 0;
 	struct ref_lock *lock;
 	struct stat loginfo;
@@ -1664,7 +1664,7 @@ int create_symref(const char *ref_target, const char *refs_heads_master,
 	char ref[1000];
 	int fd, len, written;
 	char *git_HEAD = git_pathdup("%s", ref_target);
-	unsigned char old_sha1[20], new_sha1[HASH_OCTETS];
+	unsigned char old_sha1[HASH_OCTETS], new_sha1[HASH_OCTETS];
 
 	if (logmsg && read_ref(ref_target, old_sha1))
 		hashclr(old_sha1);
@@ -1859,7 +1859,7 @@ int for_each_recent_reflog_ent(const char *ref, each_reflog_ent_fn fn, long ofs,
 	}
 
 	while (!strbuf_getwholeline(&sb, logfp, '\n')) {
-		unsigned char osha1[20], nsha1[HASH_OCTETS];
+		unsigned char osha1[HASH_OCTETS], nsha1[HASH_OCTETS];
 		char *email_end, *message;
 		unsigned long timestamp;
 		int tz;
@@ -2072,7 +2072,7 @@ char *shorten_unambiguous_ref(const char *ref, int strict)
 		 */
 		for (j = 0; j < rules_to_fail; j++) {
 			const char *rule = ref_rev_parse_rules[j];
-			unsigned char short_objectname[20];
+			unsigned char short_objectname[HASH_OCTETS];
 			char refname[PATH_MAX];
 
 			/* skip matched rule */

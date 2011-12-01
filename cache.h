@@ -807,7 +807,7 @@ static inline unsigned int hexval(unsigned char c)
 #define DEFAULT_ABBREV default_abbrev
 
 struct object_context {
-	unsigned char tree[20];
+	unsigned char tree[HASH_OCTETS];
 	char path[PATH_MAX];
 	unsigned mode;
 };
@@ -1033,7 +1033,7 @@ extern int git_connection_is_socket(struct child_process *conn);
 extern int path_match(const char *path, int nr, char **match);
 struct extra_have_objects {
 	int nr, alloc;
-	unsigned char (*array)[20];
+	unsigned char (*array)[HASH_OCTETS];
 };
 extern struct ref **get_remote_heads(int in, struct ref **list, int nr_match, char **match, unsigned int flags, struct extra_have_objects *);
 extern int server_supports(const char *feature);

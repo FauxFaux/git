@@ -422,7 +422,7 @@ static struct object *want_commit(const char *name)
 static void merge_name(const char *remote, struct strbuf *msg)
 {
 	struct object *remote_head;
-	unsigned char branch_head[20], buf_sha[20];
+	unsigned char branch_head[HASH_OCTETS], buf_sha[HASH_OCTETS];
 	struct strbuf buf = STRBUF_INIT;
 	struct strbuf bname = STRBUF_INIT;
 	const char *ptr;
@@ -903,7 +903,7 @@ static void prepare_to_commit(void)
 
 static int merge_trivial(struct commit *head)
 {
-	unsigned char result_tree[20], result_commit[20];
+	unsigned char result_tree[HASH_OCTETS], result_commit[HASH_OCTETS];
 	struct commit_list *parent = xmalloc(sizeof(*parent));
 
 	write_tree_trivial(result_tree);
@@ -926,7 +926,7 @@ static int finish_automerge(struct commit *head,
 {
 	struct commit_list *parents = NULL, *j;
 	struct strbuf buf = STRBUF_INIT;
-	unsigned char result_commit[20];
+	unsigned char result_commit[HASH_OCTETS];
 
 	free_commit_list(common);
 	if (allow_fast_forward) {
@@ -1085,8 +1085,8 @@ static void write_merge_state(void)
 
 int cmd_merge(int argc, const char **argv, const char *prefix)
 {
-	unsigned char result_tree[20];
-	unsigned char stash[20];
+	unsigned char result_tree[HASH_OCTETS];
+	unsigned char stash[HASH_OCTETS];
 	unsigned char head_sha1[HASH_OCTETS];
 	struct commit *head_commit;
 	struct strbuf buf = STRBUF_INIT;

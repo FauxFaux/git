@@ -1019,15 +1019,15 @@ static int store_object(
 	unsigned char hdr[96];
 	unsigned char sha1[HASH_OCTETS];
 	unsigned long hdrlen, deltalen;
-	git_SHA_CTX c;
+	git_HASH_CTX c;
 	git_zstream s;
 
 	hdrlen = sprintf((char *)hdr,"%s %lu", typename(type),
 		(unsigned long)dat->len) + 1;
-	git_SHA1_Init(&c);
-	git_SHA1_Update(&c, hdr, hdrlen);
-	git_SHA1_Update(&c, dat->buf, dat->len);
-	git_SHA1_Final(sha1, &c);
+	git_HASH_Init(&c);
+	git_HASH_Update(&c, hdr, hdrlen);
+	git_HASH_Update(&c, dat->buf, dat->len);
+	git_HASH_Final(sha1, &c);
 	if (sha1out)
 		hashcpy(sha1out, sha1);
 
@@ -1143,7 +1143,7 @@ static int store_object(
 	return 0;
 }
 
-static void truncate_pack(off_t to, git_SHA_CTX *ctx)
+static void truncate_pack(off_t to, git_HASH_CTX *ctx)
 {
 	if (ftruncate(pack_data->pack_fd, to)
 	 || lseek(pack_data->pack_fd, to, SEEK_SET) != to)
@@ -1165,8 +1165,8 @@ static void stream_blob(uintmax_t len, unsigned char *sha1out, uintmax_t mark)
 	unsigned char sha1[HASH_OCTETS];
 	unsigned long hdrlen;
 	off_t offset;
-	git_SHA_CTX c;
-	git_SHA_CTX pack_file_ctx;
+	git_HASH_CTX c;
+	git_HASH_CTX pack_file_ctx;
 	git_zstream s;
 	int status = Z_OK;
 
@@ -1185,8 +1185,8 @@ static void stream_blob(uintmax_t len, unsigned char *sha1out, uintmax_t mark)
 	if (out_sz <= hdrlen)
 		die("impossibly large object header");
 
-	git_SHA1_Init(&c);
-	git_SHA1_Update(&c, out_buf, hdrlen);
+	git_HASH_Init(&c);
+	git_HASH_Update(&c, out_buf, hdrlen);
 
 	crc32_begin(pack_file);
 
@@ -1207,7 +1207,7 @@ static void stream_blob(uintmax_t len, unsigned char *sha1out, uintmax_t mark)
 			if (!n && feof(stdin))
 				die("EOF in data (%" PRIuMAX " bytes remaining)", len);
 
-			git_SHA1_Update(&c, in_buf, n);
+			git_HASH_Update(&c, in_buf, n);
 			s.next_in = in_buf;
 			s.avail_in = n;
 			len -= n;
@@ -1233,7 +1233,7 @@ static void stream_blob(uintmax_t len, unsigned char *sha1out, uintmax_t mark)
 		}
 	}
 	git_deflate_end(&s);
-	git_SHA1_Final(sha1, &c);
+	git_HASH_Final(sha1, &c);
 
 	if (sha1out)
 		hashcpy(sha1out, sha1);
